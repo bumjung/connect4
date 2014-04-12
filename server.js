@@ -336,10 +336,10 @@ io.sockets.on("connection",function(socket){
 			if(games[results[0]]){
 				var row=getRow(results[0], data.column);
 			    if(data.hover == 1){
-			    	socket.emit("preview",{ hover:1, row:row, column:data.column, color:results[1] });
+			    	io.sockets.in(results[0]).emit("preview",{ hover:1, row:row, column:data.column, color:results[1] });
 			    }
 			    else{
-			    	socket.emit("preview",{ hover:0, row:row, column:data.column, color:results[1] });
+			    	io.sockets.in(results[0]).emit("preview",{ hover:0, row:row, column:data.column, color:results[1] });
 			    }
 			}
 	    });

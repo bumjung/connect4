@@ -7,13 +7,23 @@ $(document).ready(function() {
         }
     }
     $("#board table").append(content);
-    $(document).ready(function () {
-	  $("#help").tooltip({
-	    'selector': '',
-	    'placement': 'top',
-	    'container':'body'
-	  });
+
+	$("#copy-clipboard").tooltip({
+	'selector': '',
+	'placement': 'top',
+	'container':'body'
 	});
+
+	$('a#copy-clipboard').zclip({
+		path:'static/flash/ZeroClipboard.swf',
+		copy:function(){
+			return $('input[name="shareUrl"]').val();
+		},
+		afterCopy:function(){
+			alertify.success("URL has been copied. Send it to your friend!");
+		}
+	});
+
 });
 
 var socket = io.connect(window.location.hostname);

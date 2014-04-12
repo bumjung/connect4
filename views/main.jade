@@ -16,9 +16,12 @@ block content
 				table.center-table
 				.form-group(id="room-url")
 					label(for="shareUrl").col-md-3.control-label.share-label Share URL:
-					.col-md-7
+					.col-md-8
 						input(style="display:inline-block;" type='text', data-room=share, name='shareUrl', value=shareURL ReadOnly).form-control
-						i(id="help" rel="tooltip" class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="Copy the link to your friend !")
+						//input.button.send(style="float:none; display:inline-block;" type='button', value='COPY')
+						a(id="copy-clipboard" class="fa-stack fa-lg" rel="tooltip" data-toggle="tooltip" data-placement="right" title="Click me to copy the URL and send to your friend !")
+							i(class="fa fa-square fa-stack-2x")
+							i(class="fa fa-clipboard fa-stack-1x" style="color:#fff")
 			.col-md-2
 				.p2-score
 					i(class="fa fa-trophy") &nbsp;
