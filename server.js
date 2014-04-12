@@ -4,6 +4,8 @@ var app = express();
 app.set('port', process.env.PORT || 3000);
 var io = require("socket.io").listen(app.listen(app.get('port')) ,{log: false});
  
+console.log("Listening on port" + app.get('port'));
+
 app.use("/static", express.static(__dirname + "/static"));
 
 var length=6;
@@ -178,6 +180,7 @@ app.get("/about",function(req, res){
 
 
 io.sockets.on("connection",function(socket){
+	socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "WELCOME! You can chat with your opponent here." });
 	socket.on("join",function(data){
 		console.log("server room:" + data.room);
 		
@@ -190,7 +193,7 @@ io.sockets.on("connection",function(socket){
 				socket.emit("kick");
 				return;
 			}
-			console.log("PLAYER 2 HAS JOINED THE GAME")
+
 			// Initiate player 2
 			socket.join(data.room);
 			socket.set("room", data.room);
@@ -212,6 +215,13 @@ io.sockets.on("connection",function(socket){
 
 			io.sockets.in(data.room).emit("online");
 
+			console.log("PLAYER 2 HAS JOINED THE GAME");
+			socket.emit("message",{ me: false, players: false, color: "#bdc3c7", message : "Player 1 has joined the game." });
+			io.sockets.in(data.room).emit("message",{ me: false, players: false, color: "#bdc3c7", message : "Player 2 has joined the game." });
+
+			games[data.room].player1.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "It's your turn!" });
+			socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "Waiting for your opponent to make a move..." });
+		    		
 			//Notify players
 			games[data.room].player1.emit("notify",{connected:1, turn : true});
 			socket.emit("notify",{connected:1, turn : false});
@@ -219,7 +229,6 @@ io.sockets.on("connection",function(socket){
 
 		// Initiate player 1 and game table
 		else{
-			console.log("PLAYER 1 HAS JOINED THE GAME")
 			//Initiate player 1
 			socket.join(data.room);
 			socket.set("room", data.room);
@@ -251,6 +260,9 @@ io.sockets.on("connection",function(socket){
 				board: board,
 				ended: false
 			}
+			
+			console.log("PLAYER 1 HAS JOINED THE GAME");
+			socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "Player 1 has joined the game." });
 		}
 	});
 	// check where the player put the "box"
@@ -268,6 +280,9 @@ io.sockets.on("connection",function(socket){
 
 	    		// check if it is the player's turn and game hasn't ended
 		    	if(results[0] && !games[results[2]].ended){
+					
+					results[1].emit("message",{ me:false, players: false, color: "#bdc3c7", message : "It's your turn!" });
+		    		socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "Waiting for your opponent to make a move..." });
 		    		// check if column is full
 		    		if(games[results[2]].board[0][data.column] == 0){
 			    		socket.set("turn", false);
@@ -346,7 +361,7 @@ io.sockets.on("connection",function(socket){
 
 	socket.on("disconnect",function(){
 		socket.get("room",function(err,room){
-	    	if(room){
+	    	if(room in games){
 				console.log("Disconnecting...");
 				io.sockets.in(room).emit('leave');
 				if(room in games){
@@ -355,6 +370,23 @@ io.sockets.on("connection",function(socket){
 			}
 		});
 	});
+
+
+	socket.on("send",function(data){
+		async.parallel([
+			socket.get.bind(this, "room"),
+			socket.get.bind(this, "color"),
+			socket.get.bind(this, "opponent")
+	    ], function(err, results) {
+			if(results[0] in games){
+				if(results[2]){
+					results[2].emit("message",{ me:false, players: true, color: results[1], message : data.message });
+				}
+				socket.emit("message",{ me:true, players: true, color: results[1], message : data.message });
+			}
+		});
+	});
+
 });
 
 
@@ -362,5 +394,4 @@ io.sockets.on("connection",function(socket){
 	
 
 
-console.log("Listening on port" + app.get('port'));
 

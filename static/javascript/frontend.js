@@ -19,6 +19,12 @@ $(document).ready(function() {
 var socket = io.connect(window.location.hostname);
 
 
+/*
+//////////////////////////////////////////////////////////////////
+// ==========================  GAME ========================== //
+////////////////////////////////////////////////////////////////
+*/
+
 var room = $("input").data("room");
 
 socket.on("connect",function(){
@@ -140,5 +146,83 @@ socket.on("leave",function(){
 socket.on("errorMessage",function(data){
 	alertify.error(data.message);
 });
+
+/*
+//////////////////////////////////////////////////////////////////
+// ========================  MESSAGES ======================== //
+////////////////////////////////////////////////////////////////
+*/
+
+function sendMessage(){
+		console.log($('.field').val());
+		socket.emit("send", { message : $('.field').val() });
+		$('.field').val("");
+}
+
+$(document).ready(function(){
+	$('.send').click(function(){
+		sendMessage();
+	});
+	$(".field").keypress(function(e) {
+        if(e.which == 13) {
+        	console.log("enter clicked");
+            sendMessage();
+        }
+    });
+});
+
+var messages = [
+		/*{
+			players:false,
+			color: HEX,
+			message: TEXT
+		}*/
+];
+
+
+socket.on('message',function(data){
+	if(data.message){
+		messages.push(
+			{
+				me:data.me,
+				players:data.players,
+				color: data.color,
+				message: data.message
+			});
+		console.log(messages);
+		var content="";
+		for(var i = 0; i < messages.length; i ++){
+			if(messages[i].players){
+				console.log("players");
+				var display="";
+				if(messages[i].me){
+					display="Me";
+				}
+				else{
+					display="Opponent";
+				}
+				content+= "<span style='letter-spacing: 0.7px;'><span style='color:"+messages[i].color+"'>"+display+"</span> : "+messages[i].message+"</span><br/>";
+				
+			}
+			else{
+				console.log("console");
+				content+= "<span style='letter-spacing: 0.7px; color:"+messages[i].color+"'>"+messages[i].message+"</span><br/>";
+			}
+		}
+		$('#content').html(content);
+		$("#content").scrollTop($("#content")[0].scrollHeight);
+		$('.field').focus();
+	}
+});
+
+
+
+
+
+
+
+
+
+
 
 
