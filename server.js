@@ -200,6 +200,7 @@ io.sockets.on("connection",function(socket){
 			socket.set("pid", -1);
 			socket.set("color", "#e74c3c");
 			socket.set("preview",[]);
+			socket.set("ready",true);
 			// Set opponents
 			socket.set("opponent", games[data.room].player1);
 			games[data.room].player1.set("opponent", socket);
@@ -236,6 +237,7 @@ io.sockets.on("connection",function(socket){
 			socket.set("color", "#f1c40f");
 			socket.set("turn", false);
 			socket.set("preview", []);
+			socket.set("ready",true);
 			//Initiate game table as an array
 			board=initBoard();
 
@@ -277,48 +279,55 @@ io.sockets.on("connection",function(socket){
 
 	    	// check if both players are in the game/room
 	    	if(games[results[2]].player2){	
+	    		// check if game is ready to be played
+	    		if(!games[results[2]].ended){
+	    			// check if it is the player's turn
+			    	if(results[0]){
+						
+			    		// check if column is full
+			    		if(games[results[2]].board[0][data.column] == 0){
+				    		socket.set("turn", false);
+				    		results[1].set("turn", true);
 
-	    		// check if it is the player's turn and game hasn't ended
-		    	if(results[0] && !games[results[2]].ended){
-					
-					results[1].emit("message",{ me:false, players: false, color: "#bdc3c7", message : "It's your turn!" });
-		    		socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "Waiting for your opponent to make a move..." });
-		    		// check if column is full
-		    		if(games[results[2]].board[0][data.column] == 0){
-			    		socket.set("turn", false);
-			    		results[1].set("turn", true);
+				    		var row = getRow(results[2], data.column);
 
-			    		var row = getRow(results[2], data.column);
+				    		// occupy empty space as pid
+				    		games[results[2]].board[row][data.column] = results[3];
+				    		
+				    		// drop and display block on frontend
+				    		io.sockets.in(results[2]).emit("drop",{ row:row, column:data.column, color:results[4] });
+				    		//socket.emit("drop",{ row:row, column:data.column, color:results[4] });
+				    		//results[1].emit("drop",{ row:row, column:data.column, color:results[4] });
+				    		
+				    		//console.log("testing " + games[results[2]].board[row][data.column]);
 
-			    		// occupy empty space as pid
-			    		games[results[2]].board[row][data.column] = results[3];
-			    		
-			    		// drop and display block on frontend
-			    		io.sockets.in(results[2]).emit("drop",{ row:row, column:data.column, color:results[4] });
-			    		//socket.emit("drop",{ row:row, column:data.column, color:results[4] });
-			    		//results[1].emit("drop",{ row:row, column:data.column, color:results[4] });
-			    		
-			    		//console.log("testing " + games[results[2]].board[row][data.column]);
-
-			    		// check if 4 has been connected
-			    		if(check4(row, data.column, results[2])){
-			    			games[results[2]].ended=true;
-			    			return;
-			    		}
-			    		else if(checkDraw(results[2])){
-			    			console.log("draw");
-							io.sockets.in(results[2]).emit('gameover', {winner: false, message: "Game was tied", score:[0,0], highlight:[],timeout:300 });
-			    		}
-			    	}
+				    		// check if 4 has been connected
+				    		if(check4(row, data.column, results[2])){
+				    			io.sockets.in(results[2]).emit("message",{ me:false, players: false, color: "#bdc3c7", message : "G A M E &nbsp;O V E R!" });
+				    			games[results[2]].ended=true;
+				    			return;
+				    		}
+				    		else if(checkDraw(results[2])){
+				    			console.log("draw");
+								io.sockets.in(results[2]).emit('gameover', {winner: false, message: "Game was tied", score:[0,0], highlight:[],timeout:300 });
+				    		}
+							results[1].emit("message",{ me:false, players: false, color: "#bdc3c7", message : "It's your turn!" });
+			    			socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "Waiting for your opponent to make a move..." });
+				    	}
+				    	else{
+			    			console.log(results[3] + " column is full");
+				    		socket.emit("errorMessage", { message : "The column is full! Try somewhere else." })
+				    	}
+				    }
 			    	else{
-		    			console.log(results[3] + " column is full");
-			    		socket.emit("errorMessage", { message : "The column is full! Try somewhere else." })
+			    		console.log(results[3] + " opponent's turn");
+			    		socket.emit("errorMessage", { message : "Don't be hasty! it's your opponent's turn." });
 			    	}
 			    }
-		    	else{
-		    		console.log(results[3] + " opponent's turn");
-		    		socket.emit("errorMessage", { message : "Don't be hasty! it's your opponent's turn." });
-		    	}
+			    else{
+		    		console.log("not all players are ready");
+			    	socket.emit("notify",{connected:0, turn : results[0]});
+			    }
 		    }
 		    else{
 		    	console.log("player 2 hasn't joined yet");
@@ -369,16 +378,50 @@ io.sockets.on("connection",function(socket){
 	    });
 	});
 
+	// ready is reset
+	// players ready becomes true when user clicks "ok" when asked to play again
+	socket.on("reset_ready",function(){
+		socket.set("ready", false);
+	});
+
 	socket.on("reset",function(){
 		async.parallel([
 			socket.get.bind(this, "turn"),
-			socket.get.bind(this, "room")
+			socket.get.bind(this, "room"),
+			socket.get.bind(this, "opponent")
 	    ], function(err, results) {
+
 	    	if(results[1] in games){
-		    	games[results[1]].ended=false;
+				//re-initialize board
 				board=initBoard();
 		    	games[results[1]].board=board;
-		    	socket.emit("notify",{connected:1, turn : results[0]});
+				socket.set("ready", true);
+
+	    		// to check if opponent is also ready
+	    		results[2].get("ready",function(err, ready){
+	    			
+	    			// if your opponent is ready, reset game
+	    			if(ready){
+	    				console.log("ready");
+				    	games[results[1]].ended=false;
+
+				    	if(results[0]){
+							socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "It's your turn!" });
+			    			results[2].emit("message",{ me:false, players: false, color: "#bdc3c7", message : "Waiting for your opponent to make a move..." });
+				    	}
+				    	else{
+							results[2].emit("message",{ me:false, players: false, color: "#bdc3c7", message : "It's your turn!" });
+			    			socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "Waiting for your opponent to make a move..." });
+				    	}
+				    	// notify current socket player
+				    	socket.emit("notify",{connected:1, turn : results[0]});
+	    				
+	    				// notify opponent
+	    				results[2].get("turn",function(err, turn){
+				    		results[2].emit("notify",{connected:1, turn : turn});
+				    	});
+				    }
+		    	});
 		    }
 	    });
 	});

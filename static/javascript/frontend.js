@@ -63,9 +63,16 @@ socket.on("notify",function(data){
 			alertify.success("Both players connected. Your turn!");
 		}
 		else{
-			alertify.success("Both players connected. Opponent's turn");
+			alertify.success("Both players connected. Opponent's turn!");
 		}
 	}
+	else{
+		alertify.log("Waiting on your opponent's response.");
+	}
+});
+
+socket.on("notify_simple",function(data){
+
 });
 
 
@@ -116,6 +123,7 @@ socket.on("preview",function(data){
 });
 
 socket.on("gameover",function(data){
+	socket.emit("reset_ready");
 	var count=0;
 	setTimeout(function(){
 		var stopinterval=setInterval(function(){
@@ -203,7 +211,7 @@ socket.on('message',function(data){
 				color: data.color,
 				message: data.message
 			});
-		
+
 		var content="";
 		for(var i = 0; i < messages.length; i ++){
 			if(messages[i].players){
