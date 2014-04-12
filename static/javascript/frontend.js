@@ -71,9 +71,6 @@ socket.on("notify",function(data){
 	}
 });
 
-socket.on("notify_simple",function(data){
-
-});
 
 
 $(document).ready(function() {
