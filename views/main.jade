@@ -15,13 +15,19 @@ block content
 			#board.col-md-5
 				table.center-table
 				.form-group(id="room-url")
-					label(for="shareUrl").col-md-3.control-label.share-label Share URL:
+					label(for="shareUrl").col-md-3.control-label.share-label
+						span(id="help")
+							i(id="help-icon" class="fa fa-question-circle" rel="tooltip" data-toggle="tooltip" title="Copy the link by clicking the clipboard button !")
+						| Share URL:
 					.col-md-8
-						input(style="display:inline-block;" type='text', data-room=share, name='shareUrl', value=shareURL ReadOnly).form-control
+						input(id="shareURL" style="display:inline-block;" type='text', data-room=share, name='shareUrl', value=shareURL ReadOnly).form-control
 						//input.button.send(style="float:none; display:inline-block;" type='button', value='COPY')
-						a(id="copy-clipboard" class="fa-stack fa-lg" rel="tooltip" data-toggle="tooltip" data-placement="right" title="Click me to copy the URL and send to your friend !")
+						//span(id="clipboard-wrapper" rel="tooltip" data-toggle="tooltip" data-placement="right" title="CLICK ME TO COPY !")
+							i(class="fa fa-square fa-stack-2x")
+						span(id="copy-clipboard" class="fa-stack fa-lg" data-clipboard-target="shareURL")
 							i(class="fa fa-square fa-stack-2x")
 							i(class="fa fa-clipboard fa-stack-1x" style="color:#fff")
+
 			.col-md-2
 				.p2-score
 					i(class="fa fa-trophy") &nbsp;

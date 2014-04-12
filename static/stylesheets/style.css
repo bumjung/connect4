@@ -134,9 +134,19 @@ code {
   text-transform: uppercase;
   margin-bottom:20px;
 }
-
-a#copy-clipboard{
-  bottom:2px;
+/*span#clipboard-wrapper{
+  position:absolute;
+  top:5px;
+  left:303px;
+  z-index:40;
+  opacity:1;
+  cursor:pointer;
+}*/
+#shareURL{
+  width:250px;
+}
+span#copy-clipboard, span#help{
+  top:3px;
   position:absolute;
   display:inline-block;
   float:right;
@@ -144,8 +154,14 @@ a#copy-clipboard{
   font-size:15px;
   color:#1abc9c;
   cursor:pointer;
-}
 
+}
+span#help{
+  left:0;
+  top:0;
+  margin-left:5px;
+  z-index:999;
+}
 .index{
   margin-top:-30px;
 }
