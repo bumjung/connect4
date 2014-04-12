@@ -169,9 +169,10 @@ $(document).ready(function(){
             sendMessage();
         }
     });
-    $(document).bind('keydown',function(e){
+    /*$(document).bind('keydown',function(e){
     	$('.field').focus();
-});
+    	$(document).unbind('keydown');
+	});*/
 });
 
 var messages = [
@@ -214,6 +215,7 @@ socket.on('message',function(data){
 		}
 		$('#content').html(content);
 		$("#content").scrollTop($("#content")[0].scrollHeight);
+		$('.field').focus();
 	}
 });
 
