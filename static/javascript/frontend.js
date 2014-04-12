@@ -14,7 +14,7 @@ $(document).ready(function() {
 	'container':'body'
 	});*/
 
-	$('#copy-clipboard').zclip({
+	$('a#copy-clipboard').zclip({
 		path:'static/flash/ZeroClipboard.swf',
 		copy:function(){
 			return $('input[name="shareUrl"]').val();
