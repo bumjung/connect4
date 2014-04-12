@@ -199,7 +199,7 @@ io.sockets.on("connection",function(socket){
 			socket.set("room", data.room);
 			socket.set("pid", -1);
 			socket.set("color", "#e74c3c");
-
+			socket.set("preview",[]);
 			// Set opponents
 			socket.set("opponent", games[data.room].player1);
 			games[data.room].player1.set("opponent", socket);
@@ -235,7 +235,7 @@ io.sockets.on("connection",function(socket){
 			socket.set("pid", 1);
 			socket.set("color", "#f1c40f");
 			socket.set("turn", false);
-
+			socket.set("preview", []);
 			//Initiate game table as an array
 			board=initBoard();
 
@@ -330,16 +330,40 @@ io.sockets.on("connection",function(socket){
 	socket.on("hover",function(data){
 		async.parallel([
 			socket.get.bind(this, "room"),
-			socket.get.bind(this, "color")
+			socket.get.bind(this, "color"),
+			socket.get.bind(this, "opponent"),
+			socket.get.bind(this, "preview")
 	    ], function(err, results) {
+
+			if(results[0] in games){
 			
-			if(games[results[0]]){
-				var row=getRow(results[0], data.column);
+				// on mouseenter
 			    if(data.hover == 1){
+			    	var row=getRow(results[0], data.column);
+			    	socket.set("preview", [row, data.column]);
 			    	io.sockets.in(results[0]).emit("preview",{ hover:1, row:row, column:data.column, color:results[1] });
 			    }
+
+			    // on mouseleave
 			    else{
-			    	io.sockets.in(results[0]).emit("preview",{ hover:0, row:row, column:data.column, color:results[1] });
+			    	io.sockets.in(results[0]).emit("preview",{ hover:0, row:results[3][0], column:results[3][1], color:results[1] });
+			    	if(games[results[0]].player2){
+				    	results[2].get("preview", function(err, preview) {
+				    	
+			    			//if row and column are the same
+			    			//if both players hovering over the same block
+			    			if(results[3][0] == preview[0]
+			    				&& results[3][1] == preview[1]){
+			    				results[2].get("color", function(err, color) {
+			    				//re-color whoever is still hovering over the same block again
+			    					io.sockets.in(results[0]).emit("preview",{ hover:1, row:preview[0], column:preview[1], color:color });
+			    				});
+			    				socket.set("preview", []);
+			    			}
+				    	});
+					}
+			    
+			    	
 			    }
 			}
 	    });

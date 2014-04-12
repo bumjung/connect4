@@ -71,8 +71,6 @@ socket.on("notify",function(data){
 
 $(document).ready(function() {
 	$(".box").click(function(){
-		console.log($(this).data("row"));
-		console.log($(this).data("column"));
 		socket.emit("click", { row : $(this).data("row"), column : $(this).data("column") });
 	});
 	var count=0;
@@ -103,6 +101,7 @@ socket.on("drop",function(data){
 
 socket.on("preview",function(data){
 	var box_object = $(".box[data-row='"+data.row+"'][data-column='"+data.column+"'] i");
+	
 	if(box_object.css("opacity") != 1
 		|| box_object.css("color") == "rgb(217, 220, 222)"){
 		if(data.hover == 1){
@@ -120,14 +119,11 @@ socket.on("gameover",function(data){
 	var count=0;
 	setTimeout(function(){
 		var stopinterval=setInterval(function(){
-			console.log(data.highlight.length-1);
-			console.log("highlights: " + data.highlight);
 			if(count == 4){
 				clearInterval(stopinterval);
 			}
 			//alert(data.highlight[count]);
 			pair=data.highlight[count];
-			console.log("pair: " + pair);
 			$(".box[data-row='"+pair[0]+"'][data-column='"+pair[1]+"'] i").css("color","#2ecc71");
 			count++;
 		},200);
@@ -170,7 +166,6 @@ socket.on("errorMessage",function(data){
 */
 
 function sendMessage(){
-		console.log($('.field').val());
 		socket.emit("send", { message : $('.field').val() });
 		$('.field').val("");
 }
@@ -181,7 +176,6 @@ $(document).ready(function(){
 	});
 	$(".field").keypress(function(e) {
         if(e.which == 13) {
-        	console.log("enter clicked");
             sendMessage();
         }
     });
@@ -209,11 +203,10 @@ socket.on('message',function(data){
 				color: data.color,
 				message: data.message
 			});
-		console.log(messages);
+		
 		var content="";
 		for(var i = 0; i < messages.length; i ++){
 			if(messages[i].players){
-				console.log("players");
 				var display="";
 				if(messages[i].me){
 					display="Me";
@@ -225,7 +218,7 @@ socket.on('message',function(data){
 				
 			}
 			else{
-				console.log("console");
+
 				content+= "<span style='letter-spacing: 0.7px; color:"+messages[i].color+"'>"+messages[i].message+"</span><br/>";
 			}
 		}
