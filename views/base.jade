@@ -1,0 +1,47 @@
+doctype html
+
+html(lang="en")
+	head
+		title Connect4
+		link(rel='stylesheet', href='http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css')
+		link(rel='stylesheet', href='http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css')
+		link(rel='stylesheet', href='static/stylesheets/alertify.core.css')
+		link(rel='stylesheet', href='static/stylesheets/alertify.default.css')
+		link(rel='stylesheet', href='static/stylesheets/style.css')
+	body
+		.navbar.navbar-default.navbar-fixed-top(role='navigation')
+			.content
+				.navbar-header
+					button.navbar-toggle(type="button", data-toggle="collapse",data-target=".navbar-collapse")
+						span.sr-only 
+							Toggle Navigation
+						span.icon-bar
+						span.icon-bar
+						span.icon-bar
+					a.navbar-brand(href="/") Connect4 
+						|&nbsp;
+						i(class="fa fa-circle" style="color:#f1c40f;")
+						|&nbsp;
+						i(class="fa fa-circle" style="color:#e74c3c;")
+				.collapse.navbar-collapse
+					//-ul.nav.navbar-nav
+						li.active
+							a(href="/") Home
+						li
+							a(href="/about") About
+		
+		block content
+
+		#footer
+			.container
+				p.text-muted(style="color:#fff; font-size:12px; letter-spacing:1px;")
+					| Developed by 
+					a(href="http://bumjung.com") Paul Kim
+					span(style="float:right;") Released on 04.12.14
+		block javascript
+		script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
+		script(src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js")
+		script(src='/socket.io/socket.io.js')
+		script(src='static/javascript/frontend.js')
+		script(src='static/javascript/alertify.min.js')
+
