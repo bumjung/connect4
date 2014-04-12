@@ -8,13 +8,13 @@ $(document).ready(function() {
     }
     $("#board table").append(content);
 
-	$("#copy-clipboard").tooltip({
+	/*$("#copy-clipboard").tooltip({
 	'selector': '',
 	'placement': 'top',
 	'container':'body'
-	});
+	});*/
 
-	$('a#copy-clipboard').zclip({
+	$('#copy-clipboard').zclip({
 		path:'static/flash/ZeroClipboard.swf',
 		copy:function(){
 			return $('input[name="shareUrl"]').val();
