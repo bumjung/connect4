@@ -210,6 +210,8 @@ io.sockets.on("connection",function(socket){
 			// Save player 2 socket into "games" object
 			games[data.room].player2 = socket;
 
+			io.sockets.in(data.room).emit("online");
+
 			//Notify players
 			games[data.room].player1.emit("notify",{connected:1, turn : true});
 			socket.emit("notify",{connected:1, turn : false});

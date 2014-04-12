@@ -160,6 +160,9 @@ code {
   font-size:20px;
   border-radius: 10px;
 }
+.index h1{
+  font-size:60px;
+}
 .index a{
   text-decoration: none;
 }
@@ -174,4 +177,30 @@ code {
 }
 .logo i{
   font-size:110px;
+}
+.clear{
+  clear:both;
+}
+.p1-status, .p2-status{
+  margin-top:20px;
+  position:relative;
+  text-align:center;
+  width:126px;
+  float:right;
+}
+.p1-status i, .p2-status i{
+  color:#eb6b56;
+  -webkit-transition: color 0.2s;
+  transition: color 0.2s;
+}
+.online i{
+  color:#2ecc71;
+}
+.p1-status span, .p2-status span{
+  font-size:13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+a, h1{
+  letter-spacing: 1px;
 }

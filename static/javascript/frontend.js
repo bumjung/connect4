@@ -31,6 +31,11 @@ socket.on("kick",function(data){
 	window.location = "/error_full";
 });
 
+socket.on("online",function(){
+	$('.p2-status i').css("color","#2ecc71");
+	$('.p2-status span').html(" Connected");
+});
+
 socket.on("notify",function(data){
 	if(data.connected == 1){
 		if(data.turn){
