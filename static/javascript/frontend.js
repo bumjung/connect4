@@ -23,6 +23,11 @@ $(document).ready(function() {
 	'placement': 'top',
 	'container':'body'
 	});
+	$("#send_message").tooltip({
+	'selector': '',
+	'placement': 'left',
+	'container':'body'
+	});
 	/*$(zero.htmlBridge).tooltip({
 		 	"rel" : "tooltip",
 		 	"data-toggle" : "tooltip",

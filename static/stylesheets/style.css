@@ -3,7 +3,7 @@
 html {
   position: relative;
   min-height: 100%;
-  
+
 }
 body {
   /* Margin bottom by footer height */
@@ -155,7 +155,6 @@ span#copy-clipboard, span#help{
   font-size:15px;
   color:#1abc9c;
   cursor:pointer;
-
 }
 span#help{
   left:0;
