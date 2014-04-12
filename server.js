@@ -1,7 +1,8 @@
 var express = require("express");
 var async = require("async");
-var app = express()
-var io = require("socket.io").listen(app.listen(8080) ,{log: false});
+var app = express();
+app.set('port', process.env.PORT || 3000);
+var io = require("socket.io").listen(app.listen(app.get('port')) ,{log: false});
  
 app.use("/static", express.static(__dirname + "/static"));
 
@@ -359,5 +360,5 @@ io.sockets.on("connection",function(socket){
 	
 
 
-console.log("Listening on port http://localhost:8080");
+console.log("Listening on port" + app.get('port'));
 
