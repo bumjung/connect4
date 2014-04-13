@@ -180,7 +180,9 @@ app.get("/about",function(req, res){
 
 
 io.sockets.on("connection",function(socket){
-	socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "WELCOME! You can chat with your opponent here." });
+	socket.emit("message",{ me:false, players: false, color: "#1abc9c", message : "To start the game, click on the clipboard button and share the link with your friend." });
+	socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : " " });
+	socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "WELCOME! You can chat with your friend here." });
 	socket.on("join",function(data){
 		console.log("server room:" + data.room);
 		
