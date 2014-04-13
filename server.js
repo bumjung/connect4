@@ -159,11 +159,11 @@ app.get("/", function(req, res) {
 });
 app.get("/room", function(req, res) {
 	var room=generateRoom();
-    res.render("main.jade", {shareURL: req.protocol+"://"+req.host+"/"+room, share: room});
+    res.render("main.jade", {shareURL: req.host+"/"+room, share: room});
 });
 app.get("/:room([a-zA-Z0-9]{"+length+"})",function(req,res){
 	room=req.params.room
-    res.render("main.jade", {shareURL: req.protocol+"://"+req.host+"/"+room, share: room});
+    res.render("main.jade", {shareURL: req.host+"/"+room, share: room});
 });
 app.get("/error_full",function(req, res){
 	res.render("full.jade");
