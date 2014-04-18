@@ -161,6 +161,10 @@ app.get("/room", function(req, res) {
 	var room=generateRoom();
     res.render("main.jade", {shareURL: req.host+"/"+room, share: room});
 });
+app.get("/room-tour", function(req, res) {
+	var room=generateRoom();
+    res.render("main.jade", {shareURL: req.host+"/"+room, share: room});
+});
 app.get("/:room([a-zA-Z0-9]{"+length+"})",function(req,res){
 	room=req.params.room
     res.render("main.jade", {shareURL: req.host+"/"+room, share: room});
@@ -224,7 +228,8 @@ io.sockets.on("connection",function(socket){
 
 			games[data.room].player1.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "It's your turn!" });
 			socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "Waiting for your opponent to make a move..." });
-		    		
+		    io.sockets.in(data.room).emit("turn", { pid : 1 });
+
 			//Notify players
 			games[data.room].player1.emit("notify",{connected:1, turn : true});
 			socket.emit("notify",{connected:1, turn : false});
@@ -315,6 +320,9 @@ io.sockets.on("connection",function(socket){
 				    		}
 							results[1].emit("message",{ me:false, players: false, color: "#bdc3c7", message : "It's your turn!" });
 			    			socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "Waiting for your opponent to make a move..." });
+			    			results[1].get("pid", function(err, pid){
+			    				io.sockets.in(results[2]).emit("turn", { pid : pid });
+			    			});
 				    	}
 				    	else{
 			    			console.log(results[3] + " column is full");
@@ -390,7 +398,8 @@ io.sockets.on("connection",function(socket){
 		async.parallel([
 			socket.get.bind(this, "turn"),
 			socket.get.bind(this, "room"),
-			socket.get.bind(this, "opponent")
+			socket.get.bind(this, "opponent"),
+			socket.get.bind(this, "pid")
 	    ], function(err, results) {
 
 	    	if(results[1] in games){
@@ -410,10 +419,14 @@ io.sockets.on("connection",function(socket){
 				    	if(results[0]){
 							socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "It's your turn!" });
 			    			results[2].emit("message",{ me:false, players: false, color: "#bdc3c7", message : "Waiting for your opponent to make a move..." });
+			    			io.sockets.in(results[1]).emit("turn", { pid : results[3] });
 				    	}
 				    	else{
 							results[2].emit("message",{ me:false, players: false, color: "#bdc3c7", message : "It's your turn!" });
 			    			socket.emit("message",{ me:false, players: false, color: "#bdc3c7", message : "Waiting for your opponent to make a move..." });
+			    			results[2].get("pid",function(err, pid){
+			    				io.sockets.in(results[1]).emit("turn", { pid : pid });
+				    		});
 				    	}
 				    	// notify current socket player
 				    	socket.emit("notify",{connected:1, turn : results[0]});

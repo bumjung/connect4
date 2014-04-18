@@ -9,6 +9,7 @@ html(lang="en")
 		meta(name="viewport" content="width=device-width, initial-scale=1.0")
 		link(rel="icon" href="http://bumjung.com/content/media/images/icon.png" type="image/x-icon")
 		link(rel='stylesheet', href='http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css')
+		link(rel='stylesheet', href='static/stylesheets/bootstrap-tour.min.css')
 		link(rel='stylesheet', href='http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css')
 		link(rel='stylesheet', href='static/stylesheets/alertify.core.css')
 		link(rel='stylesheet', href='static/stylesheets/alertify.default.css')
@@ -27,7 +28,7 @@ html(lang="en")
 		.navbar.navbar-default.navbar-fixed-top(role='navigation')
 			.content
 				.navbar-header
-					button.navbar-toggle(type="button", data-toggle="collapse",data-target=".navbar-collapse")
+					//button.navbar-toggle(type="button", data-toggle="collapse",data-target=".navbar-collapse")
 						span.sr-only 
 							Toggle Navigation
 						span.icon-bar
@@ -38,7 +39,8 @@ html(lang="en")
 						i(class="fa fa-circle" style="color:#f1c40f;")
 						|&nbsp;
 						i(class="fa fa-circle" style="color:#e74c3c;")
-				.collapse.navbar-collapse
+							
+				//.collapse.navbar-collapse
 					//-ul.nav.navbar-nav
 						li.active
 							a(href="/") Home
@@ -59,6 +61,7 @@ html(lang="en")
 		script(type="text/javascript" src='/socket.io/socket.io.js')
 		script(type="text/javascript" src="static/javascript/ZeroClipboard.min.js")
 		script(type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js")
+		script(type="text/javascript" src="static/javascript/bootstrap-tour.min.js")
 		script(type="text/javascript" src='static/javascript/alertify.min.js')
 		script(type="text/javascript" src='static/javascript/frontend.js')
 

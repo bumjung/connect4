@@ -1,5 +1,9 @@
 extends base
 
+//block tour
+	ul(class="nav navbar-nav navbar-left")
+		li
+			a(id="tour" href="#tour") Give me a tour!
 block content
 	.container(id="main-content")
 		.row
@@ -37,7 +41,7 @@ block content
 					i(class="fa fa-circle")
 					span &nbsp;OFFLINE
 			.col-md-3
-				.controls
+				.controls#chat
 					#content
 					input.field(type="text")
 					input.button.send(id="send_message" type='button', value='Send' rel="tooltip" data-toggle="tooltip-button" title="You can also send messages by clicking 'Enter' !")
