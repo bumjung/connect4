@@ -2,6 +2,7 @@ $(document).ready(function(){
 
 	var tour = new Tour({
   	backdrop: true,
+  	storage: false,
   	steps: [
 	  {
 	    element: "#shareURL",
