@@ -10,3 +10,12 @@ Classic connect4 online game
   * Socket.IO
   * Jade
   
+### Screenshots:
+
+##### Landing Page:
+
+![](https://raw.githubusercontent.com/bumjung/connect4/master/static/images/main_page.png)
+
+##### In-Game Example:
+
+![](https://raw.githubusercontent.com/bumjung/connect4/master/static/images/ingame_example.png)
