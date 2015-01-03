@@ -3,7 +3,7 @@ $(document).ready(function(){
 	var tour = new Tour({
   	backdrop: true,
   	storage: false,
-  	steps: [
+  	steps: [/*path:"/room-tour"*/
 	  {
 	    element: "#shareURL",
 	    title: "This is your game identifier.",
@@ -116,7 +116,7 @@ $(document).ready(function(){
 		socket.emit("hover", {hover:0, row : $(this).data("row"), column : $(this).data("column") })
 	});
 
-
+	// drop the coins when the column is clicked
 	socket.on("drop",function(data){
 		var row = 0;
 		var stopinterval=setInterval(function(){
@@ -132,15 +132,21 @@ $(document).ready(function(){
 		},25);
 	});
 
+	// to view where the user will place his/her coin next
 	socket.on("preview",function(data){
 		var box_object = $(".box[data-row='"+data.row+"'][data-column='"+data.column+"'] i");
 		
+		// if not (current preview position got occupied by a new coin)
+		// or current preview position is unoccupied (grey)
 		if(box_object.css("opacity") != 1
 			|| box_object.css("color") == "rgb(217, 220, 222)"){
+
+			// on hover
 			if(data.hover == 1){
 				box_object.css("color",data.color);
 				box_object.css("opacity",0.3);
 			}
+			// on exithover
 			else{
 				box_object.css("color","");
 				box_object.css("opacity",1);
@@ -148,10 +154,17 @@ $(document).ready(function(){
 		}
 	});
 
+	// emitted from backend, when game ends
 	socket.on("gameover",function(data){
+
+		// reset everything for a new game
 		socket.emit("reset_ready");
 		var count=0;
+
+		// allow some delay time for the coin to drop first
 		setTimeout(function(){
+
+			// color in the 4 connected in green
 			var stopinterval=setInterval(function(){
 				if(count == 4){
 					clearInterval(stopinterval);
@@ -162,28 +175,40 @@ $(document).ready(function(){
 				count++;
 			},200);
 	 	},150);
+
+	 	// increment the players' score
 		p1=parseInt($(".p1-score span").html())+data.score[0];
 		p2=parseInt($(".p2-score span").html())+data.score[1];
 		$(".p1-score span").html(p1);
 		$(".p2-score span").html(p2);
 
+		// allow some delay time
 		setTimeout(function(){
+
+			// ask users if they want to play again or leave
 			alertify.set({ labels: {
 			    ok     : "Play again!",
 			    cancel : "Leave Room"
 			} });
 			alertify.confirm(data.message, function(e){
+				// if 'Play again!' was clicked
 				if(e) {
 					$("td i").css("color","");
 		            socket.emit("reset");
 		        }
+		        // if 'Leave Room' was clicked
 		        else {
+		        	// disconnect user
 		       		socket.emit("disconnect");
+
+		       		//relocate user
 		            window.location = '/exit';
 		        }
 			}, 'confirm');
 		},data.timeout);
 	});
+
+	// adds border if it's the player's turn
 	socket.on("turn",function(data){
 		console.log(data.pid);
 		if(data.pid == 1){
@@ -211,8 +236,11 @@ $(document).ready(function(){
 	////////////////////////////////////////////////////////////////
 	*/
 
+	// send the message to the backend, and clear the textbox input field
 	function sendMessage(){
+			// send message data to backend
 			socket.emit("send", { message : $('.field').val() });
+			// clear the textbox input
 			$('.field').val("");
 	}
 
@@ -220,6 +248,7 @@ $(document).ready(function(){
 		sendMessage();
 	});
 	$(".field").keypress(function(e) {
+		// if 'enter' key was pressed
         if(e.which == 13) {
             sendMessage();
         }
@@ -237,9 +266,11 @@ $(document).ready(function(){
 			}*/
 	];
 
-
+	// get data from backend and display it
 	socket.on('message',function(data){
+		// if message isn't empty
 		if(data.message){
+			// push on the message to global messages (contains all previous messages)
 			messages.push(
 				{
 					me:data.me,
@@ -249,9 +280,15 @@ $(document).ready(function(){
 				});
 
 			var content="";
+
+			// loop through every message
 			for(var i = 0; i < messages.length; i ++){
+
+				// player or console specified
 				if(messages[i].players){
 					var display="";
+					
+					// display name specified
 					if(messages[i].me){
 						display="Me";
 					}
@@ -261,13 +298,16 @@ $(document).ready(function(){
 					content+= "<span style='letter-spacing: 0.7px;'><span style='color:"+messages[i].color+"'>"+display+"</span> : "+messages[i].message+"</span><br/>";
 					
 				}
+				// if console message
 				else{
 
 					content+= "<span style='letter-spacing: 0.7px; color:"+messages[i].color+"'>"+messages[i].message+"</span><br/>";
 				}
 			}
 			$('#content').html(content);
+			// scroll down as messages come in
 			$("#content").scrollTop($("#content")[0].scrollHeight);
+			// focus on the textbox input
 			$('.field').focus();
 		}
 	});
