@@ -3,6 +3,10 @@ connect4
 
 Classic connect4 online game
 
+Link: [connect4.bumjung.com](http://connect4.bumjung.com)
+
+(run by Heroku)
+
 ### Dependencies:
 
   * Node
